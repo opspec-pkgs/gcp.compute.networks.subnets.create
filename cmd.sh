@@ -6,7 +6,7 @@ gcloud auth activate-service-account --key-file=/keyFile
 
 echo "checking for existing subnet"
 
-if eval "gcloud compute networks describe $name --project $projectId" >/dev/null 2>&1
+if eval "gcloud compute networks subnets describe $name" >/dev/null 2>&1
 then
   echo "found exiting subnet"
   exit
@@ -17,7 +17,6 @@ fi
 echo "creating subnet..."
 subnetCreateCmd="gcloud compute networks subnets create $name"
 subnetCreateCmd=$(printf "%s --network %s" "$subnetCreateCmd" "$network")
-subnetCreateCmd=$(printf "%s --project %s" "$subnetCreateCmd" "$projectId")
 subnetCreateCmd=$(printf "%s --range %s" "$subnetCreateCmd" "$range")
 
 # handle opts
@@ -28,10 +27,10 @@ if [ "$enablePrivateIpGoogleAccess" = "true" ]; then
   clusterCreateCmd=$(printf "%s --enable-private-ip-google-access" "$enablePrivateIpGoogleAccess")
 fi
 if [ "$description" != " " ]; then
-  subnetCreateCmd=$(printf "%s --description" "$description")
+  subnetCreateCmd=$(printf "%s --description %s" "$subnetCreateCmd" "$description")
 fi
 if [ "$secondaryRange" != " " ]; then
-  subnetCreateCmd=$(printf "%s --secondary-range" "$secondaryRange")
+  subnetCreateCmd=$(printf "%s --secondary-range %s" "$subnetCreateCmd" "$secondaryRange")
 fi
 
 eval "$subnetCreateCmd"
