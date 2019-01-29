@@ -1,0 +1,65 @@
+description: creates a google cloud platform virtual private cloud subnet (if it doesn't exist)
+inputs:
+  description:
+    string:
+      default: ' '
+      description: optional, textual description for the subnet
+      constraints: {minLength: 1}
+  enableFlowLogs:
+    boolean:
+      default: false
+      description: enable/disable VPC flow logging for this subnet.
+        More information for VPC flow logs can be found at https://cloud.google.com/vpc/docs/using-flow-logs
+  enablePrivateIpGoogleAccess:
+    boolean:
+      default: false
+      description: enable/disable access to Google Cloud APIs from this subnet for instances without a public ip address
+  keyFile:
+    string:
+      description: key file for a GCP service account w/ `Compute Network Admin` role
+      isSecret: true
+  name:
+    string:
+      description: name of provisioned subnet
+      constraints: {minLength: 1}
+  network:
+    string:
+      description: network to which the subnet belongs
+      constraints: {minLength: 1}
+  projectId:
+    string:
+      description: id of the GCP project containing the subnet
+      constraints: {minLength: 1}
+  range:
+    string:
+      description: IP space allocated to this subnet in CIDR format
+      constraints: {minLength: 1}
+  region:
+    string:
+      description: region of provisioned subnet (e.g. us-central1)
+      constraints: { minLength: 1 }
+  secondaryRange:
+    string:
+      default: ' '
+      description: comma separated list of named secondary IP ranges for use in IP aliasing.
+        For example, `range1=192.168.64.0/24` adds a secondary range 192.168.64.0/24 with name range1.
+      constraints: {minLength: 1}
+name: github.com/opspec-pkgs/gcp.vpc.subnet.create
+run:
+  container:
+    image: { ref: 'google/cloud-sdk:229.0.0-alpine' }
+    files:
+      /cmd.sh:
+      /keyFile: $(keyFile)
+    cmd: [ /cmd.sh ]
+    envVars:
+      CLOUDSDK_COMPUTE_REGION: $(region)
+      description:
+      enableFlowLogs:
+      enablePrivateIpGoogleAccess:
+      name:
+      network:
+      projectId:
+      range:
+      secondaryRange:
+version: 1.0.0
